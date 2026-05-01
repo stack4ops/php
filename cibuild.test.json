@@ -1,0 +1,9 @@
+[
+    {
+      "_comment": "php-fpm startet und schreibt den erwarteten Log-Output",
+      "type": "log",
+      "assert": "fpm is running",
+      "entrypoint": "keep",
+      "cmd": []
+    }
+  ]
