@@ -16,13 +16,14 @@
 #                        directly from snapshot.debian.org (like ZenDiS)
 #
 # Build locally:
-#   nix build .#packages.x86_64-linux.php-83-fpm-amd64
+#   nix build .#packages.x86_64-linux.83-fpm-amd64
 #   docker load < result
 #   docker run --rm localhost/php:83-fpm-amd64 php --version
 #
-# Build via cibuild:
+# Build via cibuild (branch "83"):
 #   CIBUILD_BUILD_CLIENT=nix
-#   CIBUILD_NIX_FLAKE_ATTR=php-83-fpm-amd64   (or arm64)
+#   CIBUILD_BUILD_NATIVE=1
+#   → flake attr derived automatically: 83-fpm-amd64
 # =============================================================================
 
 {
@@ -266,7 +267,7 @@ EOF
             arch = systemToArch targetSystem;
             pkg  = packagesForSystem buildSystem targetSystem;
           in {
-            name  = "${imageName}-${phpVersion}-${phpVariant}-${arch}";
+            name  = "${phpVersion}-${phpVariant}-${arch}";
             value = pkg.image;
           }
         ) targetSystems);
@@ -276,8 +277,8 @@ EOF
       # Outputs — what `nix build` and cibuild see
       #
       # Access:
-      #   nix build .#packages.x86_64-linux.php-83-fpm-amd64
-      #   nix build .#packages.x86_64-linux.php-83-fpm-arm64   (cross — later)
+      #   nix build .#packages.x86_64-linux.83-fpm-amd64
+      #   nix build .#packages.x86_64-linux.83-fpm-arm64   (cross — later)
       # -----------------------------------------------------------------------
       packages = builtins.listToAttrs (map (buildSystem: {
         name  = buildSystem;
