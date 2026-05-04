@@ -58,14 +58,17 @@
       # PHP version — defined centrally, like ZenDiS "versions = [ "13" ]"
       # Later: multiple versions [ "83" "84" ] across branches
       # -----------------------------------------------------------------------
-      phpVersion = "83"; # → pkgs.php83
+      # renovate: datasource=repology depName=nix_unstable/php83 versioning=loose
+      # php-version: 8.3.21
+      phpVersion = "8.3";  # used in image tag and flake attribute: 8.3-fpm-amd64
+      phpPkgAttr = "php83"; # nixpkgs attribute name — pkgs.php83
 
       # -----------------------------------------------------------------------
       # Image metadata
       # -----------------------------------------------------------------------
       imageName  = "php";
       phpVariant = "fpm";
-      imageTag   = "${phpVersion}-${phpVariant}";  # e.g. "83-fpm"
+      imageTag   = "${phpVersion}-${phpVariant}";  # e.g. "8.3-fpm"
 
       # -----------------------------------------------------------------------
       # Packages for a buildSystem/targetSystem pair
@@ -95,8 +98,9 @@
           # not in the base image itself. Follows the ZenDiS principle:
           # minimal base, extensions added by consuming images.
           # -------------------------------------------------------------------
-          php = pkgs."php${phpVersion}";
+          php = pkgs.${phpPkgAttr};
 
+          # robust php-fpm binary path detection — location can vary across nixpkgs versions
           # robust php-fpm binary path detection — location can vary across nixpkgs versions
           phpFpmBin =
             if pkgs.lib.pathExists "${php}/bin/php-fpm"

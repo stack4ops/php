@@ -1,0 +1,45 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:base"],
+  
+    "nix": {
+      "enabled": true
+    },
+  
+    "lockFileMaintenance": {
+      "enabled": true,
+      "extends": ["schedule:weekly"],
+      "commitMessageAction": "update flake.lock"
+    },
+  
+    "customManagers": [
+      {
+        "description": "Track PHP version in flake.nix via Repology (nixpkgs unstable)",
+        "customType": "regex",
+        "managerFilePatterns": ["/(^|/)flake\\.nix$/"],
+        "matchStrings": [
+          "# renovate: datasource=repology depName=(?<depName>.*?) versioning=loose\\n\\s+#\\s*php-version:\\s*(?<currentValue>[\\d.]+)"
+        ],
+        "datasourceTemplate": "repology",
+        "versioningTemplate": "loose"
+      }
+    ],
+  
+    "packageRules": [
+      {
+        "description": "PHP version bump — triggers flake.lock update + new image build",
+        "matchDatasources": ["repology"],
+        "matchPackageNames": ["nix_unstable/php83"],
+        "automerge": false,
+        "commitMessagePrefix": "chore(php):",
+        "labels": ["php-version-bump"]
+      },
+      {
+        "description": "flake.lock weekly maintenance",
+        "matchUpdateTypes": ["lockFileMaintenance"],
+        "automerge": false,
+        "commitMessagePrefix": "chore(nix):",
+        "labels": ["nix-flake-update"]
+      }
+    ]
+  }
